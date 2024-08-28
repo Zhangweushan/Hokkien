@@ -1,0 +1,211 @@
+<html><head></base>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台語學習問題管理系統 - 問題列表</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --background-color: #ecf0f1;
+    --card-background: #ffffff;
+    --text-color: #333;
+    --border-radius: 8px;
+  }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background-color);
+  }
+
+  h1 {
+    color: var(--secondary-color);
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .question-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .question-card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .question-card:hover {
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+    transform: translateY(-5px);
+  }
+
+  .question-type {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+  }
+
+  .question-content {
+    margin-bottom: 15px;
+  }
+
+  .options {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .options li {
+    margin-bottom: 5px;
+    padding: 5px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+  }
+
+  .correct-answer {
+    font-weight: bold;
+    color: #27ae60;
+    margin-top: 10px;
+  }
+
+  .audio-url {
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  .delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .delete-btn:hover {
+    background-color: #c0392b;
+  }
+
+  #loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+  <h1>台語學習問題列表</h1>
+  
+  <div id="questionList" class="question-list"></div>
+
+  <div id="loadingOverlay" style="display:none;">
+    <div class="spinner"></div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4Mm2BacFk54U2KRQeIeuDlRLSWp9yxSyLVUQtV9ZzbEEdkRa0aeC5W2llIn6leRQXBQ/exec';
+
+    async function fetchQuestions() {
+      showLoading();
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getQuestions&count=100`);
+        const questions = await response.json();
+        displayQuestions(questions);
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+        alert('無法取得問題列表，請稍後再試。');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function displayQuestions(questions) {
+      const questionList = document.getElementById('questionList');
+      questionList.innerHTML = '';
+
+      questions.forEach(question => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.innerHTML = `
+          <div class="question-type">${question.type === 'text' ? '文字題' : '音檔題'}</div>
+          <div class="question-content">${question.question}</div>
+          <ul class="options">
+            ${question.options.map(option => `<li>${option}</li>`).join('')}
+          </ul>
+          <div class="correct-answer">正確答案：${question.correctAnswer}</div>
+          ${question.audioUrl ? `<div class="audio-url">音檔 URL：${question.audioUrl}</div>` : ''}
+          <button class="delete-btn" onclick="deleteQuestion(${question.id})">刪除</button>
+        `;
+        questionList.appendChild(card);
+      });
+    }
+
+    async function deleteQuestion(questionId) {
+      if (!confirm('確定要刪除這個問題嗎？')) return;
+
+      showLoading();
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=deleteQuestion&questionId=${questionId}`, {
+          method: 'POST',
+          mode: 'no-cors'
+        });
+
+        if (response.status === 0) {
+          alert('問題已成功刪除！（注意：由於跨域限制，無法確認服務器的實際響應）');
+          fetchQuestions();
+        } else {
+          throw new Error('刪除失敗，請檢查網絡連接並重試。');
+        }
+      } catch (error) {
+        console.error('Error deleting question:', error);
+        alert('刪除問題時發生錯誤，請稍後再試。');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    // 初始加載問題
+    fetchQuestions();
+  </script>
+</body>
+</html>
