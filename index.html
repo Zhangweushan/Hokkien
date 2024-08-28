@@ -31,6 +31,7 @@
     align-items: center;
     background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     padding: 20px;
+    overflow-x: hidden;
   }
 
   #app {
@@ -42,6 +43,7 @@
     width: 100%;
     max-width: 600px;
     overflow: hidden;
+    position: relative;
   }
 
   h1 {
@@ -374,6 +376,43 @@
       font-size: 1.5em;
     }
   }
+
+  /* 新增答題特效相關樣式 */
+  @keyframes correctAnswer {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes incorrectAnswer {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+  }
+
+  .correct-answer {
+    animation: correctAnswer 0.5s ease-in-out;
+    background-color: var(--success-color) !important;
+  }
+
+  .incorrect-answer {
+    animation: incorrectAnswer 0.5s ease-in-out;
+    background-color: var(--error-color) !important;
+  }
+
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #f0f0f0;
+    opacity: 0;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
 </style>
 </head>
 <body>
@@ -519,6 +558,9 @@ function submitAnswer() {
   .then(result => {
     if (result.correct) {
       correctAnswers++;
+      displayCorrectAnswerEffect();
+    } else {
+      displayIncorrectAnswerEffect();
     }
     displayResult(result.correct, result.correctAnswer);
     setTimeout(() => {
@@ -588,6 +630,10 @@ function displayFinalResult() {
     </div>
   `;
   quizStarted = false;
+  
+  if (percentage >= 70) {
+    createConfetti();
+  }
 }
 
 function updateProgressBar() {
@@ -628,6 +674,41 @@ window.addEventListener('beforeunload', function (e) {
     return '你確定要離開嗎？你的進度將會遺失。';
   }
 });
+
+// 新增答題特效相關函數
+function displayCorrectAnswerEffect() {
+  const selectedButton = document.querySelector('.option-button.selected');
+  selectedButton.classList.add('correct-answer');
+  setTimeout(() => {
+    selectedButton.classList.remove('correct-answer');
+  }, 1000);
+}
+
+function displayIncorrectAnswerEffect() {
+  const selectedButton = document.querySelector('.option-button.selected');
+  selectedButton.classList.add('incorrect-answer');
+  setTimeout(() => {
+    selectedButton.classList.remove('incorrect-answer');
+  }, 1000);
+}
+
+function createConfetti() {
+  const confettiCount = 100;
+  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+
+  for (let i = 0; i < confettiCount; i++) {
+    const confetti = document.createElement('div');
+    confetti.classList.add('confetti');
+    confetti.style.left = `${Math.random() * 100}%`;
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.animation = `confettiFall ${1 + Math.random() * 2}s linear`;
+    document.body.appendChild(confetti);
+
+    setTimeout(() => {
+      confetti.remove();
+    }, 3000);
+  }
+}
 </script>
 </body>
 </html>
