@@ -3,6 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>台語學習問題管理系統 - 問題列表</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
   :root {
     --primary-color: #3498db;
@@ -10,54 +11,79 @@
     --background-color: #ecf0f1;
     --card-background: #ffffff;
     --text-color: #333;
-    --border-radius: 8px;
+    --border-radius: 12px;
+    --box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
   }
 
   body {
     font-family: 'Noto Sans TC', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 40px 20px;
     background-color: var(--background-color);
+    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
   }
 
   h1 {
     color: var(--secondary-color);
     text-align: center;
-    font-size: 2.5em;
-    margin-bottom: 30px;
+    font-size: 3em;
+    margin-bottom: 40px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    letter-spacing: 2px;
   }
 
   .question-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
   }
 
   .question-card {
     background-color: var(--card-background);
     border-radius: var(--border-radius);
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    padding: 30px;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
   }
 
   .question-card:hover {
-    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
-    transform: translateY(-5px);
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
   }
 
   .question-type {
     font-weight: bold;
     color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+  }
+
+  .question-type i {
+    margin-right: 10px;
   }
 
   .question-content {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    line-height: 1.6;
   }
 
   .options {
@@ -66,35 +92,78 @@
   }
 
   .options li {
-    margin-bottom: 5px;
-    padding: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
     background-color: #f8f9fa;
-    border-radius: 4px;
+    border-radius: 6px;
+    transition: var(--transition);
+  }
+
+  .options li:hover {
+    background-color: #e9ecef;
   }
 
   .correct-answer {
     font-weight: bold;
     color: #27ae60;
-    margin-top: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e8f8f5;
+    border-radius: 6px;
   }
 
   .audio-url {
-    margin-top: 10px;
+    margin-top: 15px;
     font-style: italic;
+    word-break: break-all;
+  }
+
+  .btn {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-right: 10px;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-transform: uppercase;
   }
 
   .delete-btn {
     background-color: #e74c3c;
     color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
   }
 
   .delete-btn:hover {
     background-color: #c0392b;
+  }
+
+  .edit-btn {
+    background-color: #f39c12;
+    color: white;
+  }
+
+  .edit-btn:hover {
+    background-color: #d35400;
+  }
+
+  .save-btn {
+    background-color: #2ecc71;
+    color: white;
+  }
+
+  .save-btn:hover {
+    background-color: #27ae60;
+  }
+
+  .cancel-btn {
+    background-color: #95a5a6;
+    color: white;
+  }
+
+  .cancel-btn:hover {
+    background-color: #7f8c8d;
   }
 
   #loadingOverlay {
@@ -103,7 +172,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -111,10 +180,10 @@
   }
 
   .spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid var(--primary-color);
+    width: 60px;
+    height: 60px;
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -122,6 +191,28 @@
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  .editable-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: var(--transition);
+  }
+
+  .editable-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .question-list {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
@@ -159,17 +250,86 @@
         const card = document.createElement('div');
         card.className = 'question-card';
         card.innerHTML = `
-          <div class="question-type">${question.type === 'text' ? '文字題' : '音檔題'}</div>
+          <div class="question-type">
+            <i class="fas ${question.type === 'text' ? 'fa-file-alt' : 'fa-headphones'}"></i>
+            ${question.type === 'text' ? '文字題' : '音檔題'}
+          </div>
           <div class="question-content">${question.question}</div>
           <ul class="options">
             ${question.options.map(option => `<li>${option}</li>`).join('')}
           </ul>
           <div class="correct-answer">正確答案：${question.correctAnswer}</div>
           ${question.audioUrl ? `<div class="audio-url">音檔 URL：${question.audioUrl}</div>` : ''}
-          <button class="delete-btn" onclick="deleteQuestion(${question.id})">刪除</button>
+          <div style="margin-top: 20px;">
+            <button class="btn edit-btn" onclick="editQuestion(${question.id})"><i class="fas fa-edit"></i> 修改</button>
+            <button class="btn delete-btn" onclick="deleteQuestion(${question.id})"><i class="fas fa-trash-alt"></i> 刪除</button>
+          </div>
         `;
         questionList.appendChild(card);
       });
+    }
+
+    function editQuestion(questionId) {
+      const card = document.querySelector(`.question-card:nth-child(${questionId + 1})`);
+      const question = card.querySelector('.question-content').textContent;
+      const options = Array.from(card.querySelectorAll('.options li')).map(li => li.textContent);
+      const correctAnswer = card.querySelector('.correct-answer').textContent.replace('正確答案：', '');
+      const audioUrl = card.querySelector('.audio-url') ? card.querySelector('.audio-url').textContent.replace('音檔 URL：', '') : '';
+
+      card.innerHTML = `
+        <div class="question-type"><i class="fas fa-edit"></i> 編輯問題</div>
+        <input type="text" class="editable-field question-input" value="${question}" placeholder="問題內容">
+        ${options.map((option, index) => `
+          <input type="text" class="editable-field option-input" value="${option}" placeholder="選項 ${index + 1}">
+        `).join('')}
+        <input type="text" class="editable-field correct-answer-input" value="${correctAnswer}" placeholder="正確答案">
+        <input type="text" class="editable-field audio-url-input" value="${audioUrl}" placeholder="音檔 URL（可選）">
+        <div style="margin-top: 20px;">
+          <button class="btn save-btn" onclick="saveQuestion(${questionId})"><i class="fas fa-save"></i> 保存</button>
+          <button class="btn cancel-btn" onclick="fetchQuestions()"><i class="fas fa-times"></i> 取消</button>
+        </div>
+      `;
+    }
+
+    async function saveQuestion(questionId) {
+      const card = document.querySelector(`.question-card:nth-child(${questionId + 1})`);
+      const question = card.querySelector('.question-input').value;
+      const options = Array.from(card.querySelectorAll('.option-input')).map(input => input.value);
+      const correctAnswer = card.querySelector('.correct-answer-input').value;
+      const audioUrl = card.querySelector('.audio-url-input').value;
+
+      const updatedQuestion = {
+        id: questionId,
+        type: audioUrl ? 'audio' : 'text',
+        question: question,
+        options: options,
+        correctAnswer: correctAnswer,
+        audioUrl: audioUrl
+      };
+
+      showLoading();
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=updateQuestion`, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedQuestion)
+        });
+
+        if (response.status === 0) {
+          alert('問題已成功更新！（注意：由於跨域限制，無法確認服務器的實際響應）');
+          fetchQuestions();
+        } else {
+          throw new Error('更新失敗，請檢查網絡連接並重試。');
+        }
+      } catch (error) {
+        console.error('Error updating question:', error);
+        alert('更新問題時發生錯誤，請稍後再試。');
+      } finally {
+        hideLoading();
+      }
     }
 
     async function deleteQuestion(questionId) {
