@@ -1,4 +1,4 @@
-<html><head><base href="https://cdn.jsdelivr.net/">
+<html><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>閩南語答題系統</title>
@@ -28,18 +28,34 @@
     border-left-color: #4F46E5;
     animation: spin 1s linear infinite;
   }
+  @media (max-width: 640px) {
+    .mobile-full {
+      width: 100%;
+    }
+    .mobile-text-sm {
+      font-size: 0.875rem;
+    }
+    .mobile-py-2 {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    .mobile-px-3 {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+  }
 </style>
 </head>
 <body class="bg-gray-100">
-<div id="app" v-cloak class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold text-center mb-8 text-indigo-700">閩南語答題系統</h1>
+<div id="app" v-cloak class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+  <h1 class="text-2xl sm:text-3xl font-bold text-center mb-8 text-indigo-700">閩南語答題系統</h1>
   
   <div v-if="!started" class="text-center">
-    <label for="questionCount" class="block mb-2 text-lg">選擇題目數量：</label>
-    <select id="questionCount" v-model="questionCount" class="mb-4 p-2 border rounded">
+    <label for="questionCount" class="block mb-2 text-base sm:text-lg">選擇題目數量：</label>
+    <select id="questionCount" v-model="questionCount" class="mb-4 p-2 border rounded w-full sm:w-auto">
       <option v-for="n in 20" :key="n" :value="n">{{ n }}</option>
     </select>
-    <button @click="startQuiz" class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition duration-300" :disabled="isLoading">
+    <button @click="startQuiz" class="bg-indigo-600 text-white px-4 sm:px-6 py-2 rounded hover:bg-indigo-700 transition duration-300 w-full sm:w-auto" :disabled="isLoading">
       <span v-if="!isLoading">開始測驗</span>
       <div v-else class="spinner inline-block mr-2"></div>
       <span v-if="isLoading">載入中...</span>
@@ -49,21 +65,21 @@
   <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
     <strong class="font-bold">錯誤！</strong>
     <span class="block sm:inline">{{ error }}</span>
-    <button @click="restartQuiz" class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+    <button @click="restartQuiz" class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto">
       重新開始
     </button>
   </div>
 
   <div v-else>
-    <div v-if="currentQuestionIndex < questions.length" class="bg-white shadow-lg rounded-lg p-6 mb-8">
-      <h2 class="text-xl font-semibold mb-4">問題 {{ currentQuestionIndex + 1 }} / {{ questions.length }}</h2>
-      <p class="text-lg mb-6">{{ currentQuestion.question }}</p>
-      <div class="space-y-4">
+    <div v-if="currentQuestionIndex < questions.length" class="bg-white shadow-lg rounded-lg p-4 sm:p-6 mb-8">
+      <h2 class="text-lg sm:text-xl font-semibold mb-4">問題 {{ currentQuestionIndex + 1 }} / {{ questions.length }}</h2>
+      <p class="text-base sm:text-lg mb-6">{{ currentQuestion.question }}</p>
+      <div class="space-y-3 sm:space-y-4">
         <button 
           v-for="(option, index) in currentQuestion.options" 
           :key="index"
           @click="selectAnswer(option)"
-          class="w-full text-left p-3 rounded border transition duration-300"
+          class="w-full text-left p-2 sm:p-3 rounded border transition duration-300 mobile-text-sm"
           :class="{'bg-indigo-100 border-indigo-500': selectedAnswer === option, 'hover:bg-gray-100': selectedAnswer === null}"
         >
           {{ option }}
@@ -72,7 +88,7 @@
       <div class="mt-6 text-center">
         <button 
           @click="submitAnswer" 
-          class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition duration-300 flex items-center justify-center"
+          class="bg-indigo-600 text-white px-4 sm:px-6 py-2 rounded hover:bg-indigo-700 transition duration-300 flex items-center justify-center w-full sm:w-auto"
           :disabled="selectedAnswer === null || isSubmitting"
         >
           <span v-if="!isSubmitting">提交答案</span>
@@ -82,20 +98,20 @@
       </div>
     </div>
 
-    <div v-else class="bg-white shadow-lg rounded-lg p-6">
-      <h2 class="text-2xl font-bold mb-4">測驗完成！</h2>
-      <p class="text-lg">你的得分是：{{ score }} / {{ questions.length }}</p>
-      <button @click="restartQuiz" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition duration-300">重新開始</button>
+    <div v-else class="bg-white shadow-lg rounded-lg p-4 sm:p-6">
+      <h2 class="text-xl sm:text-2xl font-bold mb-4">測驗完成！</h2>
+      <p class="text-base sm:text-lg">你的得分是：{{ score }} / {{ questions.length }}</p>
+      <button @click="restartQuiz" class="mt-6 bg-indigo-600 text-white px-4 sm:px-6 py-2 rounded hover:bg-indigo-700 transition duration-300 w-full sm:w-auto">重新開始</button>
     </div>
 
     <transition name="fade">
-      <div v-if="feedback" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white p-6 rounded-lg shadow-xl">
-          <p class="text-xl mb-4" :class="{'text-green-600': feedback.correct, 'text-red-600': !feedback.correct}">
+      <div v-if="feedback" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+        <div class="bg-white p-4 sm:p-6 rounded-lg shadow-xl max-w-xs sm:max-w-md w-full">
+          <p class="text-lg sm:text-xl mb-4" :class="{'text-green-600': feedback.correct, 'text-red-600': !feedback.correct}">
             {{ feedback.correct ? '回答正確！' : '回答錯誤' }}
           </p>
-          <p v-if="!feedback.correct" class="mb-4">正確答案是：{{ feedback.correctAnswer }}</p>
-          <button @click="closeFeedback" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300">
+          <p v-if="!feedback.correct" class="mb-4 text-sm sm:text-base">正確答案是：{{ feedback.correctAnswer }}</p>
+          <button @click="closeFeedback" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300 w-full">
             下一題
           </button>
         </div>
