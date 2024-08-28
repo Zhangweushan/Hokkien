@@ -1,4 +1,4 @@
-<html><head></base>
+<html><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>台語學習問題管理系統 - 出題頁面</title>
@@ -19,16 +19,62 @@
     font-family: 'Noto Sans TC', sans-serif;
     line-height: 1.8;
     color: var(--text-color);
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 40px 20px;
+    margin: 0;
+    padding: 0;
     background-color: var(--background-color);
     transition: all 0.3s ease;
   }
 
+  /* 新增頁首樣式 */
+  header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 20px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+  }
+
+  .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+  }
+
+  nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+  }
+
+  nav ul li {
+    margin-left: 20px;
+  }
+
+  nav ul li a {
+    color: white;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+  }
+
+  nav ul li a:hover {
+    opacity: 0.8;
+  }
+
   .container {
-    background-color: var(--form-background);
+    max-width: 800px;
+    margin: 40px auto;
     padding: 40px;
+    background-color: var(--form-background);
     border-radius: var(--border-radius);
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   }
@@ -173,11 +219,54 @@
       grid-template-columns: 1fr;
     }
   }
+
+  .preview-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f0f4f8;
+    border-radius: var(--border-radius);
+    display: none;
+  }
+
+  .preview-container h2 {
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+  }
+
+  .preview-item {
+    margin-bottom: 10px;
+  }
+
+  .preview-item strong {
+    color: var(--primary-color);
+  }
+
+  #previewAudio {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .copyright {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.9em;
+    color: var(--secondary-color);
+    opacity: 0.7;
+  }
 </style>
 </head>
 <body>
+  <!-- 新增頁首 -->
+  <header>
+    <div class="header-content">
+      <a href="https://websimcreationengine.com/home" class="logo">台語學習系統</a>
+      <nav>
+
+    </div>
+  </header>
+
   <div class="container">
-    <h1>台語學習問題管理系統</h1>
+    <h1>題目管理系統</h1>
     
     <form id="questionForm">
       <label for="type">問題類型：</label>
@@ -225,6 +314,29 @@
 
     <div id="message"></div>
     <div class="loading" id="loadingIndicator">正在提交問題</div>
+
+    <div class="preview-container" id="previewContainer">
+      <h2>問題預覽</h2>
+      <div class="preview-item"><strong>類型：</strong> <span id="previewType"></span></div>
+      <div class="preview-item"><strong>問題：</strong> <span id="previewQuestion"></span></div>
+      <div class="preview-item"><strong>選項：</strong>
+        <ul>
+          <li id="previewOption1"></li>
+          <li id="previewOption2"></li>
+          <li id="previewOption3"></li>
+          <li id="previewOption4"></li>
+        </ul>
+      </div>
+      <div class="preview-item"><strong>正確答案：</strong> <span id="previewCorrectAnswer"></span></div>
+      <div class="preview-item" id="previewAudioContainer">
+        <strong>音檔：</strong>
+        <audio id="previewAudio" controls></audio>
+      </div>
+    </div>
+
+    <div class="copyright">
+      © 2024 zhnag 台語學習問題管理系統. 版權所有.
+    </div>
   </div>
 
   <script>
@@ -267,6 +379,7 @@
           messageDiv.textContent = '問題新增成功！（注意：由於跨域限制，無法確認服務器的實際響應）';
           messageDiv.className = 'success';
           document.getElementById('questionForm').reset();
+          hidePreview();
         } else {
           throw new Error('提交失敗，請檢查網絡連接並重試。');
         }
@@ -291,9 +404,50 @@
         audioUrlLabel.style.display = 'none';
         audioUrlField.required = false;
       }
+      updatePreview();
     });
 
-    // 初始化時觸發一次 change 事件
+    document.querySelectorAll('input, textarea, select').forEach(element => {
+      element.addEventListener('input', updatePreview);
+    });
+
+    function updatePreview() {
+      const previewContainer = document.getElementById('previewContainer');
+      const type = document.getElementById('type').value;
+      const question = document.getElementById('question').value;
+      const option1 = document.getElementById('option1').value;
+      const option2 = document.getElementById('option2').value;
+      const option3 = document.getElementById('option3').value;
+      const option4 = document.getElementById('option4').value;
+      const correctAnswer = document.getElementById('correctAnswer').value;
+      const audioUrl = document.getElementById('audioUrl').value;
+
+      document.getElementById('previewType').textContent = type === 'text' ? '文字題' : '音檔題';
+      document.getElementById('previewQuestion').textContent = question;
+      document.getElementById('previewOption1').textContent = option1;
+      document.getElementById('previewOption2').textContent = option2;
+      document.getElementById('previewOption3').textContent = option3;
+      document.getElementById('previewOption4').textContent = option4;
+      document.getElementById('previewCorrectAnswer').textContent = correctAnswer ? document.getElementById(`option${correctAnswer}`).value : '';
+
+      const previewAudioContainer = document.getElementById('previewAudioContainer');
+      const previewAudio = document.getElementById('previewAudio');
+
+      if (type === 'audio' && audioUrl) {
+        previewAudioContainer.style.display = 'block';
+        previewAudio.src = audioUrl;
+      } else {
+        previewAudioContainer.style.display = 'none';
+        previewAudio.src = '';
+      }
+
+      previewContainer.style.display = 'block';
+    }
+
+    function hidePreview() {
+      document.getElementById('previewContainer').style.display = 'none';
+    }
+
     document.getElementById('type').dispatchEvent(new Event('change'));
   </script>
 </body>
