@@ -1,7 +1,4 @@
-<html><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>閩南語答題系統</title>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>閩南語答題系統</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
 
@@ -418,6 +415,7 @@ let currentQuestionIndex = 0;
 let correctAnswers = 0;
 let totalQuestions = 10;
 let selectedAnswer = null;
+let quizStarted = false;
 
 document.getElementById('startButton').addEventListener('click', startQuiz);
 document.getElementById('submitAnswer').addEventListener('click', submitAnswer);
@@ -437,6 +435,7 @@ function startQuiz() {
   document.getElementById('startContainer').style.display = 'none';
   document.getElementById('quizContainer').style.display = 'block';
   document.getElementById('quizContainer').classList.add('fade-in');
+  quizStarted = true;
   fetchQuestions();
 }
 
@@ -588,6 +587,7 @@ function displayFinalResult() {
       <button id="retryButton" onclick="location.reload()">再測一次</button>
     </div>
   `;
+  quizStarted = false;
 }
 
 function updateProgressBar() {
@@ -616,6 +616,18 @@ function applyResponsiveStyles() {
 // Apply styles on load and resize
 window.addEventListener('load', applyResponsiveStyles);
 window.addEventListener('resize', applyResponsiveStyles);
+
+// Add event listener for beforeunload
+window.addEventListener('beforeunload', function (e) {
+  if (quizStarted) {
+    // Cancel the event
+    e.preventDefault();
+    // Chrome requires returnValue to be set
+    e.returnValue = '';
+    // Custom message
+    return '你確定要離開嗎？你的進度將會遺失。';
+  }
+});
 </script>
 </body>
 </html>
