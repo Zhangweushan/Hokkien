@@ -1,0 +1,514 @@
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>閩南語答題系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #ecf0f1;
+    --text-color: #34495e;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --button-hover-color: #2980b9;
+    --submit-button-color: #e67e22;
+    --submit-button-hover-color: #d35400;
+  }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: var(--background-color);
+    background-image: 
+      linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%),
+      url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%239C92AC" fill-opacity="0.1" fill-rule="evenodd"%3E%3Ccircle cx="3" cy="3" r="3"/%3E%3Ccircle cx="13" cy="13" r="3"/%3E%3C/g%3E%3C/svg%3E');
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #app {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 30px var(--shadow-color);
+    transition: all 0.3s ease;
+    max-width: 800px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #app::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+    transform: rotate(45deg);
+    z-index: -1;
+    animation: shimmer 10s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: rotate(45deg) translateY(-50%); }
+    100% { transform: rotate(45deg) translateY(50%); }
+  }
+
+  #app:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px var(--shadow-color);
+  }
+
+  h1 {
+    color: var(--primary-color);
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px var(--shadow-color);
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  h1::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  #app:hover h1::after {
+    transform: scaleX(1);
+  }
+
+  #questionContainer {
+    margin-bottom: 30px;
+    position: relative;
+  }
+
+  #questionText {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--text-color);
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgba(52, 152, 219, 0.1);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+  }
+
+  #optionsList {
+    list-style-type: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .option-button {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1em;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+  }
+
+  .option-button:hover {
+    background-color: var(--button-hover-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .option-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+  }
+
+  .option-button:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+  }
+
+  @keyframes ripple {
+    0% { transform: scale(0, 0); opacity: 1; }
+    20% { transform: scale(25, 25); opacity: 1; }
+    100% { opacity: 0; transform: scale(40, 40); }
+  }
+
+  #result {
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.2em;
+    padding: 15px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  #result.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #progressBar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    height: 10px;
+    position: relative;
+  }
+
+  #progress {
+    width: 0%;
+    height: 100%;
+    background-color: var(--secondary-color);
+    border-radius: 15px;
+    transition: width 0.5s ease-in-out;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #progress::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, .2) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, .2) 50%,
+      rgba(255, 255, 255, .2) 75%,
+      transparent 75%,
+      transparent
+    );
+    z-index: 1;
+    background-size: 50px 50px;
+    animation: move 2s linear infinite;
+    border-radius: 15px;
+  }
+
+  @keyframes move {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 50px 50px;
+    }
+  }
+
+  audio {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  #startContainer {
+    text-align: center;
+  }
+
+  #questionCountInput {
+    width: 80px;
+    padding: 10px;
+    margin-right: 15px;
+    border: 2px solid var(--primary-color);
+    border-radius: 5px;
+    font-size: 1em;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  #questionCountInput:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+  }
+
+  #startButton, #submitAnswer {
+    background-color: var(--secondary-color);
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+  }
+
+  #startButton:hover, #submitAnswer:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
+  }
+
+  #submitAnswer {
+    background-color: var(--submit-button-color);
+    display: block;
+    margin: 20px auto 0;
+    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+  }
+
+  #submitAnswer:hover {
+    background-color: var(--submit-button-hover-color);
+    box-shadow: 0 8px 20px rgba(230, 126, 34, 0.4);
+  }
+
+  #submitAnswer:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .selected {
+    background-color: var(--secondary-color) !important;
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4) !important;
+  }
+
+  @media (max-width: 600px) {
+    body {
+      padding: 10px;
+    }
+    #app {
+      padding: 20px;
+    }
+    h1 {
+      font-size: 2em;
+    }
+    #optionsList {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>閩南語答題系統</h1>
+  <div id="startContainer">
+    <label for="questionCountInput">請選擇題數：</label>
+    <input type="number" id="questionCountInput" min="1" max="50" value="10">
+    <button id="startButton">開始測驗</button>
+  </div>
+  <div id="quizContainer" style="display:none;">
+    <div id="progressBar">
+      <div id="progress"></div>
+    </div>
+    <div id="questionContainer">
+      <p id="questionText"></p>
+      <audio id="audioQuestion" controls style="display:none;"></audio>
+      <ul id="optionsList"></ul>
+    </div>
+    <button id="submitAnswer" disabled>提交答案</button>
+    <div id="result"></div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxm5OBlsmCyBd-SCOLkBfI5u1hoebn-EiSqv_Lvx8N6-rLYEdUkJHCgI3ZkB59OblCo1w/exec';
+let currentQuestions = [];
+let currentQuestionIndex = 0;
+let correctAnswers = 0;
+let totalQuestions = 10;
+let selectedAnswer = null;
+
+document.getElementById('startButton').addEventListener('click', startQuiz);
+document.getElementById('submitAnswer').addEventListener('click', submitAnswer);
+
+function startQuiz() {
+  totalQuestions = parseInt(document.getElementById('questionCountInput').value);
+  if (isNaN(totalQuestions) || totalQuestions < 1) {
+    alert('請輸入有效的題數');
+    return;
+  }
+  document.getElementById('startContainer').style.display = 'none';
+  document.getElementById('quizContainer').style.display = 'block';
+  fetchQuestions();
+}
+
+function fetchQuestions() {
+  fetch(`${SCRIPT_URL}?action=getQuestions&count=${totalQuestions}`)
+    .then(response => response.json())
+    .then(questions => {
+      currentQuestions = questions;
+      currentQuestionIndex = 0;
+      correctAnswers = 0;
+      displayQuestion();
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function displayQuestion() {
+  const question = currentQuestions[currentQuestionIndex];
+  const questionText = document.getElementById('questionText');
+  const optionsList = document.getElementById('optionsList');
+  const audioQuestion = document.getElementById('audioQuestion');
+  const submitButton = document.getElementById('submitAnswer');
+  
+  questionText.textContent = `問題 ${currentQuestionIndex + 1}： ${question.question}`;
+  optionsList.innerHTML = '';
+  selectedAnswer = null;
+  submitButton.disabled = true;
+  
+  if (question.type === 'audio') {
+    audioQuestion.src = question.audioUrl;
+    audioQuestion.style.display = 'block';
+  } else {
+    audioQuestion.style.display = 'none';
+  }
+  
+  question.options.forEach((option, index) => {
+    const li = document.createElement('li');
+    const button = document.createElement('button');
+    button.textContent = option;
+    button.classList.add('option-button');
+    button.onclick = () => selectAnswer(button, option);
+    li.appendChild(button);
+    optionsList.appendChild(li);
+  });
+  
+  updateProgressBar();
+}
+
+function selectAnswer(button, answer) {
+  const options = document.querySelectorAll('.option-button');
+  options.forEach(opt => opt.classList.remove('selected'));
+  button.classList.add('selected');
+  selectedAnswer = answer;
+  document.getElementById('submitAnswer').disabled = false;
+}
+
+function submitAnswer() {
+  if (selectedAnswer === null) return;
+  
+  const question = currentQuestions[currentQuestionIndex];
+  fetch(`${SCRIPT_URL}`, {
+    method: 'POST',
+    body: new URLSearchParams({
+      'action': 'checkAnswer',
+      'questionId': question.id,
+      'answer': selectedAnswer
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.correct) {
+      correctAnswers++;
+    }
+    displayResult(result.correct, result.correctAnswer);
+    document.getElementById('submitAnswer').disabled = true;
+    setTimeout(() => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < currentQuestions.length) {
+        displayQuestion();
+      } else {
+        displayFinalResult();
+      }
+    }, 1500);
+  });
+}
+
+function displayResult(isCorrect, correctAnswer) {
+  const resultDiv = document.getElementById('result');
+  if (isCorrect) {
+    resultDiv.textContent = '答對了！';
+    resultDiv.style.backgroundColor = 'rgba(46, 204, 113, 0.2)';
+    resultDiv.style.color = '#27ae60';
+  } else {
+    resultDiv.textContent = `答錯了。正確答案是：${correctAnswer}`;
+    resultDiv.style.backgroundColor = 'rgba(231, 76, 60, 0.2)';
+    resultDiv.style.color = '#c0392b';
+  }
+  resultDiv.classList.add('show');
+  setTimeout(() => {
+    resultDiv.classList.remove('show');
+  }, 1000);
+}
+
+function displayFinalResult() {
+  const app = document.getElementById('app');
+  const percentage = (correctAnswers / totalQuestions * 100).toFixed(2);
+  let message = '';
+  let color = '';
+
+  if (percentage >= 90) {
+    message = '太厲害了！你是閩南語大師！';
+    color = '#27ae60';
+  } else if (percentage >= 70) {
+    message = '表現得很好！再接再厲！';
+    color = '#2980b9';
+  } else if (percentage >= 50) {
+    message = '還不錯，繼續努力！';
+    color = '#f39c12';
+  } else {
+    message = '加油！多多練習就會進步的！';
+    color = '#e74c3c';
+  }
+
+  app.innerHTML = `
+    <h1>測驗結束</h1>
+    <div style="text-align: center; margin-bottom: 20px;">
+      <svg width="200" height="200" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#e0e0e0" stroke-width="10"/>
+        <circle cx="50" cy="50" r="45" fill="none" stroke="${color}" stroke-width="10" 
+                stroke-dasharray="${percentage * 2.83}, 283" transform="rotate(-90 50 50)">
+          <animate attributeName="stroke-dasharray" from="0, 283" to="${percentage * 2.83}, 283" dur="1s" fill="freeze" />
+        </circle>
+        <text x="50" y="50" font-size="20" text-anchor="middle" dy="7" fill="${color}">
+          <tspan x="50" dy="0">${percentage}%</tspan>
+        </text>
+      </svg>
+    </div>
+    <p style="font-size: 1.2em; text-align: center;">你答對了 ${correctAnswers} 題，共 ${totalQuestions} 題。</p>
+    <p style="font-size: 1.3em; font-weight: bold; text-align: center; color: ${color};">${message}</p>
+    <button onclick="location.reload()" style="display: block; margin: 20px auto; padding: 15px 30px; font-size: 1.2em; background-color: #3498db;">再測一次</button>
+  `;
+}
+
+function updateProgressBar() {
+  const progress = document.getElementById('progress');
+  const percentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+  progress.style.width = `${percentage}%`;
+}
+</script>
+</body>
+</html>
