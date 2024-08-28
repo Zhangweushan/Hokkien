@@ -1,0 +1,287 @@
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>閩南語答題系統 - 出題頁面</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-color: #00796b;
+    --secondary-color: #4db6ac;
+    --background-color: #e0f2f1;
+    --text-color: #333;
+    --input-bg: #fff;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  body {
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'SimHei', 'STHeiti', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .container {
+    background-color: var(--input-bg);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--box-shadow);
+  }
+
+  h1, h2 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  #add-question-container {
+    margin-bottom: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+
+  .form-group input[type="text"], .form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--secondary-color);
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .form-group input[type="text"]:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.2);
+  }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.3s, transform 0.1s;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  #submit-question-btn {
+    background-color: var(--primary-color);
+    color: white;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  #submit-question-btn:hover {
+    background-color: #00695c;
+  }
+
+  #home-btn {
+    background-color: var(--secondary-color);
+    color: white;
+  }
+
+  #home-btn:hover {
+    background-color: #26a69a;
+  }
+
+  #message {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 6px;
+  }
+
+  .success {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+  }
+
+  .error {
+    background-color: #ffcdd2;
+    color: #c62828;
+  }
+
+  @media (max-width: 600px) {
+    body {
+      padding: 10px;
+    }
+    .container {
+      padding: 20px;
+    }
+  }
+
+  /* 加載動畫樣式 */
+  .loader {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border: 3px solid #ffffff;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  #submit-question-btn.loading {
+    color: transparent;
+  }
+
+  #submit-question-btn.loading .loader {
+    display: block;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>閩南語答題系統</h1>
+    <h2>出題頁面</h2>
+    
+    <div id="add-question-container">
+      <div class="form-group">
+        <label for="new-question">問題：</label>
+        <input type="text" id="new-question" required placeholder="請輸入問題">
+      </div>
+      <div class="form-group">
+        <label for="option1">選項1：</label>
+        <input type="text" id="option1" required placeholder="請輸入選項1">
+      </div>
+      <div class="form-group">
+        <label for="option2">選項2：</label>
+        <input type="text" id="option2" required placeholder="請輸入選項2">
+      </div>
+      <div class="form-group">
+        <label for="option3">選項3：</label>
+        <input type="text" id="option3" required placeholder="請輸入選項3">
+      </div>
+      <div class="form-group">
+        <label for="option4">選項4：</label>
+        <input type="text" id="option4" required placeholder="請輸入選項4">
+      </div>
+      <div class="form-group">
+        <label for="correct-answer">正確答案：</label>
+        <select id="correct-answer" required>
+          <option value="1">選項1</option>
+          <option value="2">選項2</option>
+          <option value="3">選項3</option>
+          <option value="4">選項4</option>
+        </select>
+      </div>
+      <button id="submit-question-btn" class="btn">
+        提交新題目
+        <div class="loader"></div>
+      </button>
+      <div id="message"></div>
+    </div>
+
+    <button id="home-btn" class="btn">返回主頁</button>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylJCznQFMxhehloq6ta3GXzY1uxRbG-8mc7wo2hv66x-Rs0-X4peOHC_5VQNag-PDIYg/exec';
+
+    document.getElementById('submit-question-btn').addEventListener('click', submitNewQuestion);
+    document.getElementById('home-btn').addEventListener('click', () => window.location.href = 'index.html');
+
+    function submitNewQuestion() {
+      const submitBtn = document.getElementById('submit-question-btn');
+      const newQuestion = document.getElementById('new-question').value;
+      const option1 = document.getElementById('option1').value;
+      const option2 = document.getElementById('option2').value;
+      const option3 = document.getElementById('option3').value;
+      const option4 = document.getElementById('option4').value;
+      const correctAnswer = document.getElementById('correct-answer').value;
+
+      if (!newQuestion || !option1 || !option2 || !option3 || !option4) {
+        showMessage('請填寫所有欄位！', 'error');
+        return;
+      }
+
+      // 顯示加載動畫
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+
+      fetch(`${SCRIPT_URL}`, {
+        method: 'POST',
+        body: new URLSearchParams({
+          'action': 'addQuestion',
+          'question': newQuestion,
+          'option1': option1,
+          'option2': option2,
+          'option3': option3,
+          'option4': option4,
+          'correctAnswer': correctAnswer
+        })
+      })
+        .then(response => response.json())
+        .then(result => {
+          if (result.success) {
+            showMessage('新題目已成功添加！', 'success');
+            clearAddQuestionForm();
+          } else {
+            showMessage('添加失敗：' + result.message, 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showMessage('發生錯誤，請稍後再試。', 'error');
+        })
+        .finally(() => {
+          // 隱藏加載動畫
+          submitBtn.classList.remove('loading');
+          submitBtn.disabled = false;
+        });
+    }
+
+    function clearAddQuestionForm() {
+      document.getElementById('new-question').value = '';
+      document.getElementById('option1').value = '';
+      document.getElementById('option2').value = '';
+      document.getElementById('option3').value = '';
+      document.getElementById('option4').value = '';
+      document.getElementById('correct-answer').value = '1';
+    }
+
+    function showMessage(text, type) {
+      const messageElement = document.getElementById('message');
+      messageElement.textContent = text;
+      messageElement.className = type;
+      messageElement.style.display = 'block';
+      setTimeout(() => {
+        messageElement.style.display = 'none';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
