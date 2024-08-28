@@ -1,111 +1,231 @@
-<html><head><base href="https://example.com/"></base>
+<html><head></base>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>台語學習問題管理系統 - 出題頁面</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --primary-color: #4a90e2;
+    --secondary-color: #2c3e50;
+    --background-color: #f7f9fc;
+    --form-background: #ffffff;
+    --text-color: #333333;
+    --success-color: #27ae60;
+    --error-color: #e74c3c;
+    --border-radius: 12px;
+  }
+
   body {
-    font-family: 'Arial', sans-serif;
-    line-height: 1.6;
-    color: #333;
+    font-family: 'Noto Sans TC', sans-serif;
+    line-height: 1.8;
+    color: var(--text-color);
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: #f0f0f0;
+    padding: 40px 20px;
+    background-color: var(--background-color);
+    transition: all 0.3s ease;
   }
+
+  .container {
+    background-color: var(--form-background);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
   h1 {
-    color: #2c3e50;
+    color: var(--primary-color);
     text-align: center;
+    font-size: 2.8em;
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    position: relative;
   }
+
+  h1::after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 4px;
+    background-color: var(--primary-color);
+    margin: 20px auto;
+    border-radius: 2px;
+  }
+
   form {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
   }
+
   label {
     display: block;
-    margin-top: 10px;
+    margin-top: 20px;
     font-weight: bold;
+    color: var(--secondary-color);
+    font-size: 1.1em;
   }
+
   input[type="text"], input[type="url"], select, textarea {
     width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 15px;
+    margin-top: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--border-radius);
     box-sizing: border-box;
+    transition: all 0.3s ease;
+    font-size: 1em;
   }
+
+  input[type="text"]:focus, input[type="url"]:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+  }
+
   button {
-    background-color: #3498db;
+    background-color: var(--primary-color);
     color: white;
-    padding: 10px 15px;
+    padding: 15px 25px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
+    font-size: 1.1em;
+    margin-top: 30px;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
+
   button:hover {
-    background-color: #2980b9;
+    background-color: #3a7bc8;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
   }
+
   #message {
-    margin-top: 20px;
-    padding: 10px;
-    border-radius: 4px;
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-align: center;
   }
+
   .success {
     background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
+    border: 2px solid #c3e6cb;
+    color: var(--success-color);
   }
+
   .error {
     background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
+    border: 2px solid #f5c6cb;
+    color: var(--error-color);
+  }
+
+  .loading {
+    display: none;
+    text-align: center;
+    margin-top: 30px;
+    font-size: 1.2em;
+    color: var(--secondary-color);
+  }
+
+  .loading:after {
+    content: '.';
+    animation: dots 1.5s steps(5, end) infinite;
+  }
+
+  @keyframes dots {
+    0%, 20% {
+      color: rgba(0,0,0,0);
+      text-shadow:
+        .25em 0 0 rgba(0,0,0,0),
+        .5em 0 0 rgba(0,0,0,0);
+    }
+    40% {
+      color: var(--text-color);
+      text-shadow:
+        .25em 0 0 rgba(0,0,0,0),
+        .5em 0 0 rgba(0,0,0,0);
+    }
+    60% {
+      text-shadow:
+        .25em 0 0 var(--text-color),
+        .5em 0 0 rgba(0,0,0,0);
+    }
+    80%, 100% {
+      text-shadow:
+        .25em 0 0 var(--text-color),
+        .5em 0 0 var(--text-color);
+    }
+  }
+
+  .option-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .option-group {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
 <body>
-  <h1>台語學習問題管理系統 - 出題頁面</h1>
-  
-  <form id="questionForm">
-    <label for="type">問題類型：</label>
-    <select id="type" name="type" required>
-      <option value="text">文字題</option>
-      <option value="audio">音檔題</option>
-    </select>
+  <div class="container">
+    <h1>台語學習問題管理系統</h1>
+    
+    <form id="questionForm">
+      <label for="type">問題類型：</label>
+      <select id="type" name="type" required>
+        <option value="text">文字題</option>
+        <option value="audio">音檔題</option>
+      </select>
 
-    <label for="question">問題內容：</label>
-    <textarea id="question" name="question" rows="3" required></textarea>
+      <label for="question">問題內容：</label>
+      <textarea id="question" name="question" rows="3" required></textarea>
 
-    <label for="option1">選項 1：</label>
-    <input type="text" id="option1" name="option1" required>
+      <div class="option-group">
+        <div>
+          <label for="option1">選項 1：</label>
+          <input type="text" id="option1" name="option1" required>
+        </div>
+        <div>
+          <label for="option2">選項 2：</label>
+          <input type="text" id="option2" name="option2" required>
+        </div>
+        <div>
+          <label for="option3">選項 3：</label>
+          <input type="text" id="option3" name="option3" required>
+        </div>
+        <div>
+          <label for="option4">選項 4：</label>
+          <input type="text" id="option4" name="option4" required>
+        </div>
+      </div>
 
-    <label for="option2">選項 2：</label>
-    <input type="text" id="option2" name="option2" required>
+      <label for="correctAnswer">正確答案：</label>
+      <select id="correctAnswer" name="correctAnswer" required>
+        <option value="">請選擇正確答案</option>
+        <option value="1">選項 1</option>
+        <option value="2">選項 2</option>
+        <option value="3">選項 3</option>
+        <option value="4">選項 4</option>
+      </select>
 
-    <label for="option3">選項 3：</label>
-    <input type="text" id="option3" name="option3" required>
+      <label for="audioUrl">音檔 URL（僅限音檔題）：</label>
+      <input type="url" id="audioUrl" name="audioUrl">
 
-    <label for="option4">選項 4：</label>
-    <input type="text" id="option4" name="option4" required>
+      <button type="submit">提交問題</button>
+    </form>
 
-    <label for="correctAnswer">正確答案：</label>
-    <select id="correctAnswer" name="correctAnswer" required>
-      <option value="">請選擇正確答案</option>
-      <option value="1">選項 1</option>
-      <option value="2">選項 2</option>
-      <option value="3">選項 3</option>
-      <option value="4">選項 4</option>
-    </select>
-
-    <label for="audioUrl">音檔 URL（僅限音檔題）：</label>
-    <input type="url" id="audioUrl" name="audioUrl">
-
-    <button type="submit">提交問題</button>
-  </form>
-
-  <div id="message"></div>
+    <div id="message"></div>
+    <div class="loading" id="loadingIndicator">正在提交問題</div>
+  </div>
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypXznI16tnIC5FRV9oKtRESwqsVF9Nnj2qaiwkOhxidWSCEey7WJ6KVY9sjkPUg8svxg/exec';
@@ -128,8 +248,10 @@
       };
 
       const messageDiv = document.getElementById('message');
-      messageDiv.textContent = '正在提交問題...';
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      messageDiv.textContent = '';
       messageDiv.className = '';
+      loadingIndicator.style.display = 'block';
 
       fetch(SCRIPT_URL + '?action=addQuestion', {
         method: 'POST',
@@ -140,8 +262,7 @@
         body: JSON.stringify(questionData),
       })
       .then(response => {
-        // 由於使用 'no-cors' 模式，我們無法讀取響應內容
-        // 但我們可以檢查響應狀態是否為 0（這是 'no-cors' 模式的預期行為）
+        loadingIndicator.style.display = 'none';
         if (response.status === 0) {
           messageDiv.textContent = '問題新增成功！（注意：由於跨域限制，無法確認服務器的實際響應）';
           messageDiv.className = 'success';
@@ -151,17 +272,29 @@
         }
       })
       .catch(error => {
+        loadingIndicator.style.display = 'none';
         console.error('Error:', error);
         messageDiv.textContent = '發生錯誤，請稍後再試。錯誤詳情：' + error.message;
         messageDiv.className = 'error';
       });
     });
 
-    // 根據問題類型顯示/隱藏音檔 URL 輸入框
     document.getElementById('type').addEventListener('change', function() {
       const audioUrlField = document.getElementById('audioUrl');
-      audioUrlField.style.display = this.value === 'audio' ? 'block' : 'none';
+      const audioUrlLabel = document.querySelector('label[for="audioUrl"]');
+      if (this.value === 'audio') {
+        audioUrlField.style.display = 'block';
+        audioUrlLabel.style.display = 'block';
+        audioUrlField.required = true;
+      } else {
+        audioUrlField.style.display = 'none';
+        audioUrlLabel.style.display = 'none';
+        audioUrlField.required = false;
+      }
     });
+
+    // 初始化時觸發一次 change 事件
+    document.getElementById('type').dispatchEvent(new Event('change'));
   </script>
 </body>
 </html>
