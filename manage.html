@@ -2,38 +2,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>台語學習問題管理系統 - 問題列表</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
   :root {
-    --primary-color: #3498db;
-    --secondary-color: #2c3e50;
-    --background-color: #ecf0f1;
+    --primary-color: #4a90e2;
+    --secondary-color: #34495e;
+    --background-color: #f7f9fc;
     --card-background: #ffffff;
     --text-color: #333;
-    --border-radius: 12px;
-    --box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    --border-radius: 16px;
+    --box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     --transition: all 0.3s ease;
   }
 
   body {
-    font-family: 'Noto Sans TC', sans-serif;
+    font-family: 'Noto Sans TC', 'Poppins', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    background-image: 
+      radial-gradient(circle at top left, rgba(74, 144, 226, 0.1) 0%, transparent 40%),
+      radial-gradient(circle at bottom right, rgba(52, 73, 94, 0.1) 0%, transparent 40%);
+    min-height: 100vh;
+  }
+
+  .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
-    background-color: var(--background-color);
-    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
   }
 
   h1 {
     color: var(--secondary-color);
     text-align: center;
-    font-size: 3em;
+    font-size: 3.5em;
     margin-bottom: 40px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     letter-spacing: 2px;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
   }
 
   .question-list {
@@ -84,6 +94,7 @@
     margin-bottom: 20px;
     font-size: 1.1em;
     line-height: 1.6;
+    color: var(--secondary-color);
   }
 
   .options {
@@ -93,41 +104,46 @@
 
   .options li {
     margin-bottom: 10px;
-    padding: 10px;
+    padding: 12px;
     background-color: #f8f9fa;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: var(--transition);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   }
 
   .options li:hover {
     background-color: #e9ecef;
+    transform: translateX(5px);
   }
 
   .correct-answer {
     font-weight: bold;
     color: #27ae60;
     margin-top: 15px;
-    padding: 10px;
+    padding: 12px;
     background-color: #e8f8f5;
-    border-radius: 6px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(39, 174, 96, 0.1);
   }
 
   .audio-url {
     margin-top: 15px;
     font-style: italic;
     word-break: break-all;
+    color: #7f8c8d;
   }
 
   .btn {
     border: none;
-    padding: 10px 15px;
-    border-radius: 6px;
+    padding: 12px 18px;
+    border-radius: 8px;
     cursor: pointer;
     transition: var(--transition);
     margin-right: 10px;
     font-size: 0.9em;
     font-weight: bold;
     text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
   .delete-btn {
@@ -195,31 +211,114 @@
 
   .editable-field {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
+    padding: 12px;
+    margin-bottom: 15px;
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 1em;
     transition: var(--transition);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
   }
 
   .editable-field:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3), inset 0 1px 3px rgba(0,0,0,0.1);
   }
 
   @media (max-width: 768px) {
+    .container {
+      padding: 20px 10px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+    }
+
     .question-list {
       grid-template-columns: 1fr;
+    }
+
+    .question-card {
+      padding: 20px;
+    }
+
+    .btn {
+      padding: 10px 14px;
+      font-size: 0.8em;
+    }
+
+    .question-type {
+      font-size: 1.1em;
+    }
+
+    .question-content {
+      font-size: 1em;
+    }
+
+    .options li {
+      padding: 10px;
+    }
+
+    .correct-answer {
+      padding: 10px;
+    }
+
+    .editable-field {
+      padding: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 2em;
+    }
+
+    .question-card {
+      padding: 15px;
+    }
+
+    .btn {
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+
+    .question-type {
+      font-size: 1em;
+    }
+
+    .question-content {
+      font-size: 0.9em;
+    }
+
+    .options li {
+      padding: 8px;
+    }
+
+    .correct-answer {
+      padding: 8px;
+      font-size: 0.9em;
+    }
+
+    .audio-url {
+      font-size: 0.8em;
+    }
+
+    .editable-field {
+      padding: 8px;
+      font-size: 0.9em;
     }
   }
 </style>
 </head>
 <body>
-  <h1>台語學習問題列表</h1>
-  
-  <div id="questionList" class="question-list"></div>
+  <div class="container">
+    <h1>台語學習問題列表</h1>
+    
+    <div id="questionList" class="question-list"></div>
+  </div>
 
   <div id="loadingOverlay" style="display:none;">
     <div class="spinner"></div>
@@ -246,9 +345,10 @@
       const questionList = document.getElementById('questionList');
       questionList.innerHTML = '';
 
-      questions.forEach(question => {
+      questions.forEach((question, index) => {
         const card = document.createElement('div');
         card.className = 'question-card';
+        card.dataset.questionId = question.id;
         card.innerHTML = `
           <div class="question-type">
             <i class="fas ${question.type === 'text' ? 'fa-file-alt' : 'fa-headphones'}"></i>
@@ -270,7 +370,7 @@
     }
 
     function editQuestion(questionId) {
-      const card = document.querySelector(`.question-card:nth-child(${questionId + 1})`);
+      const card = document.querySelector(`.question-card[data-question-id="${questionId}"]`);
       const question = card.querySelector('.question-content').textContent;
       const options = Array.from(card.querySelectorAll('.options li')).map(li => li.textContent);
       const correctAnswer = card.querySelector('.correct-answer').textContent.replace('正確答案：', '');
@@ -292,7 +392,7 @@
     }
 
     async function saveQuestion(questionId) {
-      const card = document.querySelector(`.question-card:nth-child(${questionId + 1})`);
+      const card = document.querySelector(`.question-card[data-question-id="${questionId}"]`);
       const question = card.querySelector('.question-input').value;
       const options = Array.from(card.querySelectorAll('.option-input')).map(input => input.value);
       const correctAnswer = card.querySelector('.correct-answer-input').value;
