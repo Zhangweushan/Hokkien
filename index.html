@@ -461,12 +461,16 @@ function displayQuestion() {
   const optionsList = document.getElementById('optionsList');
   const audioQuestion = document.getElementById('audioQuestion');
   const submitButton = document.getElementById('submitAnswer');
+  const resultDiv = document.getElementById('result');
   
   questionText.textContent = `問題 ${currentQuestionIndex + 1}: ${question.question}`;
   optionsList.innerHTML = '';
   selectedAnswer = null;
   submitButton.disabled = true;
   submitButton.textContent = '提交答案';
+  resultDiv.textContent = ''; // Clear previous result
+  resultDiv.style.backgroundColor = 'transparent';
+  resultDiv.classList.remove('fade-in');
   
   if (question.type === 'audio') {
     audioQuestion.src = question.audioUrl;
