@@ -316,6 +316,49 @@
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
   }
 
+  /* 答題記錄樣式 */
+  #answerRecord {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  #answerRecord h3 {
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+  }
+
+  .record-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .record-item:last-child {
+    border-bottom: none;
+  }
+
+  .record-item .question {
+    flex: 1;
+    margin-right: 10px;
+  }
+
+  .record-item .result {
+    font-weight: bold;
+  }
+
+  .record-item .correct {
+    color: var(--success-color);
+  }
+
+  .record-item .incorrect {
+    color: var(--error-color);
+  }
+
   @media (max-width: 480px) {
     #app {
       padding: 20px;
@@ -350,6 +393,15 @@
 
     #finalResult p:last-of-type {
       font-size: 1.3em;
+    }
+
+    .record-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .record-item .question {
+      margin-bottom: 5px;
     }
   }
 
@@ -455,6 +507,7 @@ let correctAnswers = 0;
 let totalQuestions = 10;
 let selectedAnswer = null;
 let quizStarted = false;
+let answerRecord = []; // 新增：用於記錄答題狀況
 
 document.getElementById('startButton').addEventListener('click', startQuiz);
 document.getElementById('submitAnswer').addEventListener('click', submitAnswer);
@@ -475,6 +528,7 @@ function startQuiz() {
   document.getElementById('quizContainer').style.display = 'block';
   document.getElementById('quizContainer').classList.add('fade-in');
   quizStarted = true;
+  answerRecord = []; // 重置答題記錄
   fetchQuestions();
 }
 
@@ -563,6 +617,15 @@ function submitAnswer() {
       displayIncorrectAnswerEffect();
     }
     displayResult(result.correct, result.correctAnswer);
+    
+    // 記錄答題狀況
+    answerRecord.push({
+      question: question.question,
+      userAnswer: selectedAnswer,
+      correctAnswer: result.correctAnswer,
+      isCorrect: result.correct
+    });
+    
     setTimeout(() => {
       currentQuestionIndex++;
       if (currentQuestionIndex < currentQuestions.length) {
@@ -620,12 +683,26 @@ function displayFinalResult() {
     emoji = '📚';
   }
 
+  let answerRecordHTML = '<div id="answerRecord"><h3>答題記錄：</h3>';
+  answerRecord.forEach((record, index) => {
+    answerRecordHTML += `
+      <div class="record-item">
+        <span class="question">${index + 1}. ${record.question}</span>
+        <span class="result ${record.isCorrect ? 'correct' : 'incorrect'}">
+          ${record.isCorrect ? '正確' : '錯誤'}
+        </span>
+      </div>
+    `;
+  });
+  answerRecordHTML += '</div>';
+
   app.innerHTML = `
     <h1>測驗結束 ${emoji}</h1>
     <div id="finalResult" class="fade-in">
       <p>你答對了 ${correctAnswers} 題，共 ${totalQuestions} 題。</p>
       <p>正確率：${percentage}%</p>
       <p>${message}</p>
+      ${answerRecordHTML}
       <button id="retryButton" onclick="location.reload()">再測一次</button>
     </div>
   `;
