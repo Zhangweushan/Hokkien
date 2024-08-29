@@ -559,7 +559,8 @@ let correctAnswers = 0;
 let totalQuestions = 10;
 let selectedAnswer = null;
 let quizStarted = false;
-let answerRecord = []; // 新增：用於記錄答題狀況
+let answerRecord = []; // 用於記錄答題狀況
+let userId = null; // 用戶ID
 
 document.getElementById('startButton').addEventListener('click', startQuiz);
 document.getElementById('submitAnswer').addEventListener('click', submitAnswer);
@@ -581,6 +582,7 @@ function startQuiz() {
   document.getElementById('quizContainer').classList.add('fade-in');
   quizStarted = true;
   answerRecord = []; // 重置答題記錄
+  userId = generateUserId(); // 生成用戶ID
   fetchQuestions();
 }
 
@@ -678,7 +680,8 @@ function submitAnswer() {
     body: new URLSearchParams({
       'action': 'checkAnswer',
       'questionId': question.id,
-      'answer': selectedAnswer
+      'answer': selectedAnswer,
+      'userId': userId // 添加用戶ID
     })
   })
   .then(response => response.json())
@@ -784,6 +787,9 @@ function displayFinalResult() {
   if (percentage >= 70) {
     createConfetti();
   }
+
+  // 發送最終結果到後端
+  sendFinalResult(percentage);
 }
 
 function updateProgressBar() {
@@ -858,6 +864,32 @@ function createConfetti() {
       confetti.remove();
     }, 3000);
   }
+}
+
+// 生成用戶ID的函數
+function generateUserId() {
+  return 'user_' + Math.random().toString(36).substr(2, 9);
+}
+
+// 發送最終結果到後端的函數
+function sendFinalResult(percentage) {
+  fetch(`${SCRIPT_URL}`, {
+    method: 'POST',
+    body: new URLSearchParams({
+      'action': 'recordResult',
+      'userId': userId,
+      'score': percentage,
+      'questionCount': totalQuestions,
+      'correctCount': correctAnswers
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
+    console.log('Final result recorded:', result);
+  })
+  .catch(error => {
+    console.error('Error recording final result:', error);
+  });
 }
 </script>
 </body>
