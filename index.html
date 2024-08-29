@@ -359,6 +359,54 @@
     color: var(--error-color);
   }
 
+  /* 新增載入題目動畫相關樣式 */
+  #loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+  }
+
+  .loading-text {
+    font-size: 1.2em;
+    margin-top: 20px;
+    color: var(--primary-color);
+  }
+
+  .loading-dots {
+    display: inline-block;
+    width: 70px;
+    text-align: left;
+  }
+
+  @keyframes dot-animation {
+    0% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+    100% { content: ''; }
+  }
+
+  .loading-dots::after {
+    content: '';
+    animation: dot-animation 1.5s infinite steps(4, end);
+  }
+
+  .question-fade-in {
+    animation: questionFadeIn 0.5s ease-in;
+  }
+
+  @keyframes questionFadeIn {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   @media (max-width: 480px) {
     #app {
       padding: 20px;
@@ -484,6 +532,10 @@
     <div id="progressBar">
       <div id="progress"></div>
     </div>
+    <div id="loadingContainer" style="display:none;">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">正在載入題目<span class="loading-dots"></span></p>
+    </div>
     <div id="questionContainer">
       <p id="questionText"></p>
       <audio id="audioQuestion" controls style="display:none;"></audio>
@@ -533,18 +585,33 @@ function startQuiz() {
 }
 
 function fetchQuestions() {
+  showLoadingAnimation();
   fetch(`${SCRIPT_URL}?action=getQuestions&count=${totalQuestions}`)
     .then(response => response.json())
     .then(questions => {
       currentQuestions = questions;
       currentQuestionIndex = 0;
       correctAnswers = 0;
+      hideLoadingAnimation();
       displayQuestion();
     })
     .catch(error => {
       console.error('Error:', error);
       alert('獲取題目時出錯，請稍後再試。');
+      hideLoadingAnimation();
     });
+}
+
+function showLoadingAnimation() {
+  document.getElementById('loadingContainer').style.display = 'flex';
+  document.getElementById('questionContainer').style.display = 'none';
+  document.getElementById('submitAnswer').style.display = 'none';
+}
+
+function hideLoadingAnimation() {
+  document.getElementById('loadingContainer').style.display = 'none';
+  document.getElementById('questionContainer').style.display = 'block';
+  document.getElementById('submitAnswer').style.display = 'block';
 }
 
 function displayQuestion() {
@@ -582,6 +649,12 @@ function displayQuestion() {
   });
   
   updateProgressBar();
+  
+  // 添加問題載入動畫
+  document.getElementById('questionContainer').classList.add('question-fade-in');
+  setTimeout(() => {
+    document.getElementById('questionContainer').classList.remove('question-fade-in');
+  }, 500);
 }
 
 function selectAnswer(button, answer) {
