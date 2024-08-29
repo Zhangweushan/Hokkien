@@ -731,10 +731,7 @@ function submitAnswer() {
   })
   .finally(() => {
     submitButton.innerHTML = '提交答案';
-    // 解鎖所有選項按鈕（在下一個問題顯示時）
-    optionButtons.forEach(button => {
-      button.disabled = false;
-    });
+    // 注意：這裡不再解鎖選項按鈕，它們將保持鎖定狀態直到下一個問題顯示
   });
 }
 
