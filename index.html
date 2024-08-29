@@ -11,6 +11,7 @@
     --success-color: #4CAF50;
     --error-color: #e74c3c;
     --accent-color: #f39c12;
+    --disabled-color: #cccccc;
   }
 
   * {
@@ -174,6 +175,13 @@
   .option-button.selected {
     background-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
+  }
+
+  .option-button:disabled {
+    background-color: var(--disabled-color);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 
   #submitAnswer {
@@ -674,6 +682,12 @@ function submitAnswer() {
   submitButton.disabled = true;
   submitButton.innerHTML = '提交中 <span class="loading-spinner"></span>';
 
+  // 鎖定所有選項按鈕
+  const optionButtons = document.querySelectorAll('.option-button');
+  optionButtons.forEach(button => {
+    button.disabled = true;
+  });
+
   const question = currentQuestions[currentQuestionIndex];
   fetch(`${SCRIPT_URL}`, {
     method: 'POST',
@@ -717,6 +731,10 @@ function submitAnswer() {
   })
   .finally(() => {
     submitButton.innerHTML = '提交答案';
+    // 解鎖所有選項按鈕（在下一個問題顯示時）
+    optionButtons.forEach(button => {
+      button.disabled = false;
+    });
   });
 }
 
