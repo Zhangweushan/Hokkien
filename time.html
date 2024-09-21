@@ -1,0 +1,1169 @@
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>閩南語答題系統</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Pacifico&display=swap');
+
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #2c3e50;
+  --background-color: #f5f7fa;
+  --card-background: #ffffff;
+  --text-color: #333333;
+  --success-color: #4CAF50;
+  --error-color: #e74c3c;
+  --accent-color: #f39c12;
+  --disabled-color: #cccccc;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+#app {
+  background-color: var(--card-background);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 600px;
+  overflow: hidden;
+  position: relative;
+}
+
+h1 {
+  font-family: 'Pacifico', cursive;
+  color: var(--primary-color);
+  text-align: center;
+  font-size: 2.8em;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  letter-spacing: 2px;
+}
+
+#deviceInfo {
+  text-align: center;
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+#startContainer, #finalResult {
+  text-align: center;
+  margin-bottom: 30px;
+  background-color: #f9f9f9;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+#questionCountSelector {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.question-count-option {
+  background-color: #fff;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.question-count-option:hover,
+.question-count-option.selected {
+  background-color: var(--primary-color);
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+#timeSelector {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.time-option {
+  background-color: #fff;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.time-option:hover,
+.time-option.selected {
+  background-color: var(--primary-color);
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+#startButton, #retryButton {
+  background-color: var(--success-color);
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2em;
+  width: 100%;
+  max-width: 250px;
+  margin: 20px auto 0;
+  display: block;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#startButton:hover, #retryButton:hover {
+  background-color: #45a049;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+#startButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+#questionContainer {
+  margin-bottom: 30px;
+  background-color: #f9f9f9;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+#timer {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#questionText {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: var(--secondary-color);
+  border-left: 5px solid var(--accent-color);
+  padding-left: 15px;
+  line-height: 1.5;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+#optionsList {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.option-button {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1em;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.option-button:hover, .option-button:focus {
+  background-color: #3a7cbd;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.option-button.selected {
+  background-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
+}
+
+.option-button:disabled {
+  background-color: var(--disabled-color);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+#submitAnswer {
+  background-color: var(--success-color);
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2em;
+  width: 100%;
+  max-width: 250px;
+  margin: 20px auto;
+  display: block;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#submitAnswer:hover {
+  background-color: #45a049;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+#submitAnswer:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+#result {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#result.fade-in {
+  opacity: 1;
+}
+
+#progressBar {
+  width: 100%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+#progress {
+  width: 0;
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+#copyright {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 0.9em;
+  color: #777;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-left: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#finalResult {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+#finalResult p {
+  margin-bottom: 15px;
+  font-size: 1.2em;
+}
+
+#finalResult p:last-of-type {
+  font-weight: bold;
+  color: var(--primary-color);
+  font-size: 1.4em;
+  margin-bottom: 25px;
+}
+
+#retryButton {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2em;
+  display: inline-block;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#retryButton:hover {
+  background-color: #3a7cbd;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+#answerRecord {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#answerRecord h3 {
+  margin-bottom: 10px;
+  color: var(--secondary-color);
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-item .question {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.record-item .result {
+  font-weight: bold;
+}
+
+.record-item .correct {
+  color: var(--success-color);
+}
+
+.record-item .incorrect {
+  color: var(--error-color);
+}
+
+#loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+.loading-text {
+  font-size: 1.2em;
+  margin-top: 20px;
+  color: var(--primary-color);
+}
+
+.loading-dots {
+  display: inline-block;
+  width: 70px;
+  text-align: left;
+}
+
+@keyframes dot-animation {
+  0% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
+  100% { content: ''; }
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dot-animation 1.5s infinite steps(4, end);
+}
+
+.question-fade-in {
+  animation: questionFadeIn 0.5s ease-in;
+}
+
+@keyframes questionFadeIn {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#instructionsModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 30px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  animation: modalFadeIn 0.3s;
+}
+
+@keyframes modalFadeIn {
+  from {opacity: 0; transform: translateY(-50px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+}
+
+#instructionsButton {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#instructionsButton:hover {
+  background-color: #e67e22;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.modal-content h2 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  font-size: 1.8em;
+}
+
+.modal-content ol {
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.modal-content li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.modal-content p {
+  font-style: italic;
+  color: var(--secondary-color);
+}
+
+@media (max-width: 480px) {
+  #app {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 2em;
+  }
+
+  .question-count-option {
+    padding: 10px 15px;
+    font-size: 1em;
+  }
+
+  #timeSelector {
+    margin-bottom: 20px;
+  }
+
+  .time-option {
+    padding: 10px 15px;
+    font-size: 1em;
+  }
+
+  #startButton, #submitAnswer, #retryButton {
+    font-size: 1.1em;
+    padding: 12px 20px;
+  }
+
+  #questionText {
+    font-size: 1.2em;
+  }
+
+  .option-button {
+    padding: 12px 20px;
+    font-size: 1em;
+  }
+
+  #finalResult p {
+    font-size: 1.1em;
+  }
+
+  #finalResult p:last-of-type {
+    font-size: 1.3em;
+  }
+
+  .record-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .record-item .question {
+    margin-bottom: 5px;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 10% auto;
+    padding: 20px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.5em;
+  }
+}
+
+@media (min-width: 1024px) {
+  #app {
+    max-width: 800px;
+  }
+
+  .question-count-option {
+    padding: 15px 25px;
+    font-size: 1.2em;
+  }
+
+  .time-option {
+    padding: 15px 25px;
+    font-size: 1.2em;
+  }
+
+  #startButton, #submitAnswer, #retryButton {
+    font-size: 1.3em;
+    padding: 18px 35px;
+  }
+
+  #finalResult p {
+    font-size: 1.3em;
+  }
+
+  #finalResult p:last-of-type {
+    font-size: 1.5em;
+  }
+}
+
+@keyframes correctAnswer {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes incorrectAnswer {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+  100% { transform: translateX(0); }
+}
+
+.correct-answer {
+  animation: correctAnswer 0.5s ease-in-out;
+  background-color: var(--success-color) !important;
+}
+
+.incorrect-answer {
+  animation: incorrectAnswer 0.5s ease-in-out;
+  background-color: var(--error-color) !important;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #f0f0f0;
+  opacity: 0;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>閩南語答題系統</h1>
+  <p id="deviceInfo" style="text-align: center; font-size: 0.9em; color: #777; margin-bottom: 10px;"></p>
+  <button id="instructionsButton">使用說明</button>
+  <div id="startContainer" class="fade-in">
+    <p>請選擇題數：</p>
+    <div id="questionCountSelector">
+      <button class="question-count-option" data-count="5">5題</button>
+      <button class="question-count-option" data-count="10">10題</button>
+      <button class="question-count-option" data-count="15">15題</button>
+      <button class="question-count-option" data-count="20">20題</button>
+    </div>
+    <p>請選擇每題答題時間：</p>
+    <div id="timeSelector">
+      <button class="time-option" data-time="30">30秒</button>
+      <button class="time-option" data-time="60">1分鐘</button>
+      <button class="time-option" data-time="90">1分30秒</button>
+      <button class="time-option" data-time="120">2分鐘</button>
+    </div>
+    <button id="startButton" disabled>開始測驗</button>
+  </div>
+  <div id="quizContainer" style="display:none;">
+    <div id="timer"></div>
+    <div id="progressBar">
+      <div id="progress"></div>
+    </div>
+    <div id="loadingContainer" style="display:none;">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">正在載入題目<span class="loading-dots"></span></p>
+    </div>
+    <div id="questionContainer">
+      <p id="questionText"></p>
+      <audio id="audioQuestion" controls style="display:none;"></audio>
+      <ul id="optionsList"></ul>
+    </div>
+    <button id="submitAnswer" disabled>提交答案</button>
+    <div id="result"></div>
+  </div>
+</div>
+
+<div id="instructionsModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>使用說明</h2>
+    <ol>
+      <li>選擇您想要回答的題數（5、10、15或20題）。</li>
+      <li>請選擇每題答題時間。</li>
+      <li>點擊「開始測驗」按鈕開始答題。</li>
+      <li>仔細閱讀每個問題，如果有音頻，請點擊播放按鈕聆聽。</li>
+      <li>從提供的選項中選擇您認為正確的答案。</li>
+      <li>選擇答案後，點擊「提交答案」按鈕。</li>
+      <li>系統會立即顯示您的答案是否正確，並提供正確答案（如果回答錯誤）。</li>
+      <li>答完所有問題後，您將看到最終成績和答題記錄。</li>
+      <li>您可以選擇「再測一次」來重新開始測驗。</li>
+    </ol>
+    <p>祝您答題愉快，學習進步！</p>
+  </div>
+</div>
+
+<div id="copyright">
+  ©zhang 2024 閩南語答題系統 版權所有
+  <br>
+  本系統僅供學習使用，請勿用於商業用途
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywOXzardpCqz0Lv7IAAFABGFBset2SgVZRC6_Kvf9c1TXQPHTxa0kp9h8wKy2_oqwv/exec';
+let currentQuestions = [];
+let currentQuestionIndex = 0;
+let correctAnswers = 0;
+let totalQuestions = 10;
+let selectedAnswer = null;
+let quizStarted = false;
+let answerRecord = [];
+let userId = null;
+let timeLimit = 30;
+
+document.getElementById('startButton').addEventListener('click', startQuiz);
+document.getElementById('submitAnswer').addEventListener('click', submitAnswer);
+
+const instructionsButton = document.getElementById('instructionsButton');
+const instructionsModal = document.getElementById('instructionsModal');
+const closeButton = document.querySelector('.close');
+
+instructionsButton.onclick = function() {
+  instructionsModal.style.display = "block";
+}
+
+closeButton.onclick = function() {
+  instructionsModal.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == instructionsModal) {
+    instructionsModal.style.display = "none";
+  }
+}
+
+const questionCountOptions = document.querySelectorAll('.question-count-option');
+questionCountOptions.forEach(option => {
+  option.addEventListener('click', () => {
+    questionCountOptions.forEach(opt => opt.classList.remove('selected'));
+    option.classList.add('selected');
+    totalQuestions = parseInt(option.dataset.count);
+    updateStartButtonState();
+  });
+});
+
+const timeOptions = document.querySelectorAll('.time-option');
+timeOptions.forEach(option => {
+  option.addEventListener('click', () => {
+    timeOptions.forEach(opt => opt.classList.remove('selected'));
+    option.classList.add('selected');
+    timeLimit = parseInt(option.dataset.time);
+    updateStartButtonState();
+  });
+});
+
+function updateStartButtonState() {
+  const questionSelected = document.querySelector('.question-count-option.selected');
+  const timeSelected = document.querySelector('.time-option.selected');
+  document.getElementById('startButton').disabled = !(questionSelected && timeSelected);
+}
+
+function startQuiz() {
+  document.getElementById('startContainer').style.display = 'none';
+  document.getElementById('quizContainer').style.display = 'block';
+  document.getElementById('quizContainer').classList.add('fade-in');
+  quizStarted = true;
+  answerRecord = [];
+  userId = generateUserId();
+  fetchQuestions();
+}
+
+function fetchQuestions() {
+  showLoadingAnimation();
+  fetch(`${SCRIPT_URL}?action=getQuestions&count=${totalQuestions}`)
+    .then(response => response.json())
+    .then(questions => {
+      currentQuestions = shuffleArray(questions);
+      currentQuestionIndex = 0;
+      correctAnswers = 0;
+      hideLoadingAnimation();
+      displayQuestion();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('獲取題目時出錯，請稍後再試。');
+      hideLoadingAnimation();
+    });
+}
+
+function showLoadingAnimation() {
+  document.getElementById('loadingContainer').style.display = 'flex';
+  document.getElementById('questionContainer').style.display = 'none';
+  document.getElementById('submitAnswer').style.display = 'none';
+}
+
+function hideLoadingAnimation() {
+  document.getElementById('loadingContainer').style.display = 'none';
+  document.getElementById('questionContainer').style.display = 'block';
+  document.getElementById('submitAnswer').style.display = 'block';
+}
+
+function startTimer() {
+  timeLeft = timeLimit;
+  updateTimerDisplay();
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      if (selectedAnswer === null) {
+        selectRandomAnswer();
+      }
+      submitAnswer();
+    }
+  }, 1000);
+}
+
+function selectRandomAnswer() {
+  const options = document.querySelectorAll('.option-button');
+  const randomIndex = Math.floor(Math.random() * options.length);
+  const randomOption = options[randomIndex];
+  selectAnswer(randomOption, randomOption.textContent);
+}
+
+function updateTimerDisplay() {
+  const timerElement = document.getElementById('timer');
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  timerElement.textContent = `剩餘時間: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+  if (timeLeft <= 10) {
+    timerElement.style.color = 'red';
+  } else {
+    timerElement.style.color = 'var(--primary-color)';
+  }
+}
+
+function displayQuestion() {
+  const question = currentQuestions[currentQuestionIndex];
+  const questionText = document.getElementById('questionText');
+  const optionsList = document.getElementById('optionsList');
+  const audioQuestion = document.getElementById('audioQuestion');
+  const submitButton = document.getElementById('submitAnswer');
+  const resultDiv = document.getElementById('result');
+
+  questionText.textContent = `問題 ${currentQuestionIndex + 1}: ${question.question}`;
+  optionsList.innerHTML = '';
+  selectedAnswer = null;
+  submitButton.disabled = true;
+  submitButton.textContent = '提交答案';
+  resultDiv.textContent = '';
+  resultDiv.style.backgroundColor = 'transparent';
+  resultDiv.classList.remove('fade-in');
+
+  if (question.type === 'audio') {
+    audioQuestion.src = question.audioUrl;
+    audioQuestion.style.display = 'block';
+  } else {
+    audioQuestion.style.display = 'none';
+  }
+
+  question.options = shuffleArray(question.options);
+
+  question.options.forEach((option, index) => {
+    const li = document.createElement('li');
+    const button = document.createElement('button');
+    button.textContent = option;
+    button.classList.add('option-button');
+    button.onclick = () => selectAnswer(button, option);
+    li.appendChild(button);
+    optionsList.appendChild(li);
+  });
+
+  updateProgressBar();
+  startTimer();
+  document.getElementById('questionContainer').classList.add('question-fade-in');
+  setTimeout(() => {
+    document.getElementById('questionContainer').classList.remove('question-fade-in');
+  }, 500);
+}
+
+function selectAnswer(button, answer) {
+  const options = document.querySelectorAll('.option-button');
+  options.forEach(opt => opt.classList.remove('selected'));
+  button.classList.add('selected');
+  selectedAnswer = answer;
+  document.getElementById('submitAnswer').disabled = false;
+}
+
+function submitAnswer() {
+  clearInterval(timer);
+  if (selectedAnswer === null) {
+    selectRandomAnswer();
+  }
+
+  const submitButton = document.getElementById('submitAnswer');
+  submitButton.disabled = true;
+  submitButton.innerHTML = '提交中 <span class="loading-spinner"></span>';
+
+  const optionButtons = document.querySelectorAll('.option-button');
+  optionButtons.forEach(button => {
+    button.disabled = true;
+  });
+
+  const question = currentQuestions[currentQuestionIndex];
+  fetch(`${SCRIPT_URL}`, {
+    method: 'POST',
+    body: new URLSearchParams({
+      'action': 'checkAnswer',
+      'questionId': question.id,
+      'answer': selectedAnswer,
+      'userId': userId
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.correct) {
+      correctAnswers++;
+      displayCorrectAnswerEffect();
+    } else {
+      displayIncorrectAnswerEffect();
+    }
+    displayResult(result.correct, result.correctAnswer);
+
+    answerRecord.push({
+      question: question.question,
+      userAnswer: selectedAnswer,
+      correctAnswer: result.correctAnswer,
+      isCorrect: result.correct
+    });
+
+    setTimeout(() => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < currentQuestions.length) {
+        displayQuestion();
+      } else {
+        displayFinalResult();
+      }
+    }, 1500);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('檢查答案時出錯，請稍後再試。');
+  })
+  .finally(() => {
+    submitButton.innerHTML = '提交答案';
+  });
+}
+
+function displayResult(isCorrect, correctAnswer) {
+  const resultDiv = document.getElementById('result');
+  resultDiv.classList.remove('fade-in');
+  void resultDiv.offsetWidth;
+  resultDiv.classList.add('fade-in');
+
+  if (isCorrect) {
+    resultDiv.textContent = '答對了！做得好！';
+    resultDiv.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+    resultDiv.style.color = '#4CAF50';
+  } else {
+    resultDiv.textContent = `答錯了。正確答案是：${correctAnswer}`;
+    resultDiv.style.backgroundColor = 'rgba(231, 76, 60, 0.2)';
+    resultDiv.style.color = '#e74c3c';
+    resultDiv.classList.add('shake');
+    setTimeout(() => resultDiv.classList.remove('shake'), 820);
+  }
+}
+
+function displayFinalResult() {
+  const app = document.getElementById('app');
+  const percentage = (correctAnswers / totalQuestions * 100).toFixed(2);
+  let message = '';
+  let emoji = '';
+
+  if (percentage >= 90) {
+    message = '太厲害了！你是閩南語大師！';
+    emoji = '🏆';
+  } else if (percentage >= 70) {
+    message = '表現得很好！繼續努力！';
+    emoji = '👍';
+  } else if (percentage >= 50) {
+    message = '還不錯，再接再厲！';
+    emoji = '💪';
+  } else {
+    message = '加油！practice makes perfect！';
+    emoji = '📚';
+  }
+
+  let answerRecordHTML = '<div id="answerRecord"><h3>答題記錄：</h3>';
+  answerRecord.forEach((record, index) => {
+    answerRecordHTML += `
+      <div class="record-item">
+        <span class="question">${index + 1}. ${record.question}</span>
+        <span class="result ${record.isCorrect ? 'correct' : 'incorrect'}">
+          ${record.isCorrect ? '正確' : '錯誤'}
+        </span>
+      </div>
+    `;
+  });
+  answerRecordHTML += '</div>';
+
+  app.innerHTML = `
+    <h1>測驗結束 ${emoji}</h1>
+    <div id="finalResult" class="fade-in">
+      <p>你答對了 ${correctAnswers} 題，共 ${totalQuestions} 題</p>
+      <p>正確率：${percentage}%</p>
+      <p>${message}</p>
+      ${answerRecordHTML}
+      <button id="retryButton">再測一次</button>
+    </div>
+  `;
+
+  if (percentage >= 80) {
+    createConfetti();
+  }
+
+  document.getElementById('retryButton').addEventListener('click', startQuiz);
+}
+
+function updateProgressBar() {
+  const progress = document.getElementById('progress');
+  const percentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+  progress.style.width = `${percentage}%`;
+}
+
+function displayCorrectAnswerEffect() {
+  const selectedButton = document.querySelector('.option-button.selected');
+  selectedButton.classList.add('correct-answer');
+}
+
+function displayIncorrectAnswerEffect() {
+  const selectedButton = document.querySelector('.option-button.selected');
+  selectedButton.classList.add('incorrect-answer');
+}
+
+function createConfetti() {
+  const confettiCount = 200;
+  const container = document.body;
+
+  for (let i = 0; i < confettiCount; i++) {
+    const confetti = document.createElement('div');
+    confetti.classList.add('confetti');
+    confetti.style.left = `${Math.random() * 100}%`;
+    confetti.style.backgroundColor = getRandomColor();
+    confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
+    container.appendChild(confetti);
+
+    setTimeout(() => {
+      container.removeChild(confetti);
+    }, 5000);
+  }
+}
+
+function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function generateUserId() {
+  return 'user_' + Math.random().toString(36).substr(2, 9);
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function getDeviceBrand() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  const brands = {
+    apple: /iphone|ipad|ipod/i,
+    samsung: /samsung/i,
+    huawei: /huawei/i,
+    xiaomi: /xiaomi/i,
+    oppo: /oppo/i,
+    vivo: /vivo/i,
+    lg: /lg/i,
+    sony: /sony/i,
+    asus: /asus/i,
+    nokia: /nokia/i,
+    motorola: /motorola/i,
+    htc: /htc/i,
+  };
+
+  for (const [brand, regex] of Object.entries(brands)) {
+    if (regex.test(userAgent)) {
+      return brand.charAt(0).toUpperCase() + brand.slice(1);
+    }
+  }
+
+  return 'Unknown';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const deviceBrand = getDeviceBrand();
+  const deviceInfo = document.getElementById('deviceInfo');
+  deviceInfo.textContent = `您正在使用 ${deviceBrand} 裝置`;
+
+  document.addEventListener('copy', function(e) {
+    e.preventDefault();
+    alert('抱歉，為了維護測驗公平性，不允許複製文字。');
+  });
+
+  document.addEventListener('paste', function(e) {
+    e.preventDefault();
+    alert('抱歉，為了維護測驗公平性，不允許貼上文字。');
+  });
+
+  window.addEventListener('beforeunload', function(e) {
+    if (quizStarted && currentQuestionIndex < totalQuestions) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+});
+</script>
+</body>
+</html>
