@@ -32,6 +32,10 @@ body {
   background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 20px;
   overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 #app {
@@ -1116,8 +1120,16 @@ function shuffleArray(array) {
   return array;
 }
 
-function getDeviceBrand() {
+function getDeviceInfo() {
   const userAgent = navigator.userAgent.toLowerCase();
+  const platform = navigator.platform.toLowerCase();
+  
+  // Operating System detection
+  if (userAgent.includes('win')) return 'Windows';
+  if (userAgent.includes('mac')) return 'macOS';
+  if (userAgent.includes('linux')) return 'Linux';
+  
+  // Mobile device brand detection
   const brands = {
     apple: /iphone|ipad|ipod/i,
     samsung: /samsung/i,
@@ -1131,8 +1143,6 @@ function getDeviceBrand() {
     nokia: /nokia/i,
     motorola: /motorola/i,
     htc: /htc/i,
-    nothing: /nothing/i,
-
   };
 
   for (const [brand, regex] of Object.entries(brands)) {
@@ -1145,9 +1155,14 @@ function getDeviceBrand() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const deviceBrand = getDeviceBrand();
-  const deviceInfo = document.getElementById('deviceInfo');
-  deviceInfo.textContent = `您正在使用 ${deviceBrand} 裝置`;
+  const deviceInfo = getDeviceInfo();
+  const deviceInfoElement = document.getElementById('deviceInfo');
+  
+  if (['Windows', 'macOS', 'Linux'].includes(deviceInfo)) {
+    deviceInfoElement.textContent = `您正在使用 ${deviceInfo} 系統`;
+  } else {
+    deviceInfoElement.textContent = `您正在使用 ${deviceInfo} 裝置`;
+  }
 
   document.addEventListener('copy', function(e) {
     e.preventDefault();
