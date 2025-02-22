@@ -165,7 +165,6 @@ function displayQuestion() {
     const button = document.createElement('button');
     button.classList.add('option-button');
     if (typeof option === 'object' && option.imageUrl) {
-      // Add a class for styling options that include an image
       button.classList.add('has-image');
       const img = document.createElement('img');
       img.src = option.imageUrl;
@@ -323,7 +322,7 @@ function displayFinalResult() {
     createConfetti();
   }
   document.getElementById('retryButton').addEventListener('click', () => {
-    location.reload();
+    window.location.reload();
   });
 }
 
